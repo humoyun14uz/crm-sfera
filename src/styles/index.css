@@ -1,0 +1,948 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@import './theme.css';
+
+@custom-variant dark (&:is(.dark *));
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+  }
+
+  html {
+    @apply overflow-x-hidden;
+    scrollbar-gutter: stable;
+  }
+
+  body {
+    @apply min-h-svh w-full min-w-0 bg-background text-foreground has-[div[data-variant='inset']]:bg-sidebar;
+    overflow-x: clip;
+  }
+
+  /* Theme changes use one GPU-composited snapshot instead of transitioning
+     every element, which keeps large admin pages responsive. */
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none;
+    mix-blend-mode: normal;
+  }
+
+  ::view-transition-new(root) {
+    clip-path: circle(0 at 100% 0);
+    animation: theme-reveal 900ms cubic-bezier(0.25, 1, 0.35, 1) forwards;
+  }
+
+  @keyframes theme-reveal {
+    to {
+      clip-path: circle(150vmax at 100% 0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    ::view-transition-new(root) {
+      animation: none;
+      clip-path: none;
+    }
+  }
+
+  /* Override Radix scroll locking for sticky headers */
+  body[data-scroll-locked] {
+    overflow: unset !important;
+  }
+
+  /* Cursor pointer for buttons */
+  button:not(:disabled),
+  [role='button']:not(:disabled) {
+    cursor: pointer;
+  }
+
+  /* Prevent focus zoom on mobile devices */
+  @media screen and (max-width: 767px) {
+    input,
+    select,
+    textarea {
+      font-size: 16px !important;
+    }
+  }
+}
+
+@utility container {
+  margin-inline: auto;
+  padding-inline: 1rem;
+  @media (min-width: 640px) {
+    padding-inline: 1.5rem;
+  }
+  @media (min-width: 1024px) {
+    padding-inline: 2rem;
+  }
+}
+
+@utility no-scrollbar {
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Hide scrollbar for IE, Edge and Firefox */
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
+}
+
+@utility faded-bottom {
+  @apply after:pointer-events-none after:absolute after:inset-s-0 after:bottom-0 after:hidden after:h-32 after:w-full after:rounded-b-2xl md:after:block;
+
+  &::after {
+    background: linear-gradient(180deg, transparent 10%, var(--background) 70%);
+  }
+}
+
+.login-ambient {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: 0.92;
+}
+
+.login-ambient-square {
+  position: absolute;
+  display: block;
+  width: 5rem;
+  height: 5rem;
+  border: 1.5px solid rgb(33 140 72 / 62%);
+  border-radius: 0.45rem;
+  background: linear-gradient(
+    135deg,
+    rgb(41 169 86 / 16%),
+    rgb(33 140 72 / 5%)
+  );
+  box-shadow:
+    0 0 0 1px rgb(41 169 86 / 10%),
+    0 16px 42px rgb(33 140 72 / 16%),
+    inset 0 0 24px rgb(41 169 86 / 7%);
+  transform: rotate(18deg);
+  animation: login-square-float 11s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+.login-ambient-square-1 {
+  top: 12%;
+  left: 8%;
+  width: 7rem;
+  height: 7rem;
+  animation-delay: -2s;
+}
+
+.login-ambient-square-2 {
+  top: 28%;
+  right: 16%;
+  width: 4rem;
+  height: 4rem;
+  animation-delay: -7s;
+}
+
+.login-ambient-square-3 {
+  top: 48%;
+  left: 26%;
+  width: 3rem;
+  height: 3rem;
+  animation-delay: -11s;
+}
+
+.login-ambient-square-4 {
+  right: 5%;
+  bottom: 22%;
+  width: 8rem;
+  height: 8rem;
+  animation-delay: -5s;
+}
+
+.login-ambient-square-5 {
+  bottom: 8%;
+  left: 12%;
+  width: 4rem;
+  height: 4rem;
+  animation-delay: -9s;
+}
+
+.login-ambient-square-6 {
+  top: 8%;
+  right: 42%;
+  width: 2.5rem;
+  height: 2.5rem;
+  animation-delay: -4s;
+}
+
+.login-ambient-square-7 {
+  bottom: 36%;
+  left: 52%;
+  width: 2.25rem;
+  height: 2.25rem;
+  animation-delay: -12s;
+}
+
+@keyframes login-square-float {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(18deg) scale(1);
+    opacity: 0.52;
+  }
+
+  50% {
+    transform: translate3d(22px, -24px, 0) rotate(48deg) scale(1.06);
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .login-ambient-square {
+    animation: none;
+  }
+}
+
+/* styles.css */
+.CollapsibleContent {
+  overflow: hidden;
+}
+
+.CollapsibleContent[data-state='open'] {
+  animation: slideDown 300ms ease-out;
+}
+
+.CollapsibleContent[data-state='closed'] {
+  animation: slideUp 300ms ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    height: 0;
+  }
+
+  to {
+    height: var(--radix-collapsible-content-height);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    height: var(--radix-collapsible-content-height);
+  }
+
+  to {
+    height: 0;
+  }
+}
+/* Narrow-device guardrails: keep the shell aligned without changing the visual language. */
+@media (max-width: 700px) {
+  [data-slot='sidebar-inset'],
+  [data-slot='sidebar-inset'] > *,
+  main,
+  header,
+  header > div {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  [data-slot='sidebar-inset'] {
+    overflow-x: clip;
+  }
+
+  [data-slot='select-trigger'] {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  main {
+    overflow-x: clip;
+  }
+
+  [data-slot='card-header'] > div,
+  [data-slot='card-header'] .flex.items-center.justify-between {
+    min-width: 0;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  [data-slot='table-container'] {
+    max-width: 100%;
+    overflow-x: auto;
+  }
+
+  [data-slot='table'] {
+    min-width: 40rem;
+  }
+
+  h1,
+  h2,
+  h3,
+  p,
+  span,
+  button,
+  a {
+    overflow-wrap: anywhere;
+  }
+}
+
+@media (max-width: 380px) {
+  [data-slot='sidebar-trigger'] + [data-slot='separator'] {
+    display: none;
+  }
+
+  main {
+    padding-inline: 0.75rem;
+  }
+}
+
+/* Recharts uses a white tooltip by default; keep every chart readable in dark mode. */
+.recharts-default-tooltip {
+  border: 1px solid var(--border) !important;
+  border-radius: 0.75rem !important;
+  background-color: var(--popover) !important;
+  color: var(--popover-foreground) !important;
+  box-shadow: 0 12px 30px rgb(0 0 0 / 18%) !important;
+}
+
+.recharts-tooltip-label,
+.recharts-tooltip-item,
+.recharts-tooltip-item-list {
+  color: var(--popover-foreground) !important;
+}
+
+.recharts-cartesian-axis-tick-value {
+  fill: var(--muted-foreground);
+}
+
+/* Keep native and shared form controls readable in both themes. */
+[data-slot='input'],
+[data-slot='textarea'],
+input[type='date'],
+input[type='number'],
+select,
+textarea {
+  color: var(--foreground);
+  background-color: var(--background);
+  color-scheme: light;
+}
+
+.dark [data-slot='input'],
+.dark [data-slot='textarea'],
+.dark input[type='date'],
+.dark input[type='number'],
+.dark select,
+.dark textarea {
+  background-color: color-mix(in srgb, var(--input) 72%, var(--background));
+  color-scheme: dark;
+}
+
+.dark [data-slot='input']::placeholder,
+.dark [data-slot='textarea']::placeholder,
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: var(--muted-foreground);
+}
+
+/* Manager dashboard keeps the shared CRM language, but uses a calmer
+   operations surface so it does not read like every other module. */
+.manager-dashboard-main {
+  position: relative;
+}
+
+.manager-dashboard-main::before {
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  right: 1rem;
+  left: 1rem;
+  height: 16rem;
+  border-radius: 2rem;
+  background:
+    radial-gradient(circle at 16% 20%, rgb(16 185 129 / 11%), transparent 30%),
+    radial-gradient(circle at 82% 0%, rgb(37 99 235 / 10%), transparent 34%);
+  content: '';
+  pointer-events: none;
+}
+
+.manager-operations-strip {
+  display: grid;
+  gap: 1rem;
+  padding: 1rem;
+  border: 1px solid rgb(16 185 129 / 18%);
+  border-radius: 1.25rem;
+  background: linear-gradient(
+    105deg,
+    rgb(16 185 129 / 8%),
+    var(--card) 42%,
+    rgb(37 99 235 / 6%)
+  );
+  box-shadow: 0 12px 34px rgb(15 23 42 / 6%);
+}
+
+.manager-strip-heading,
+.manager-pulse-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.manager-live-dot {
+  width: 0.65rem;
+  height: 0.65rem;
+  flex: 0 0 auto;
+  border-radius: 999px;
+  background: #10b981;
+  box-shadow: 0 0 0 5px rgb(16 185 129 / 12%);
+}
+
+.manager-pulse-grid {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.manager-pulse-item {
+  min-width: 0;
+  padding: 0.7rem 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: 0.9rem;
+  background: rgb(255 255 255 / 42%);
+}
+
+.dark .manager-pulse-item {
+  background: rgb(15 23 42 / 22%);
+}
+
+.manager-pulse-icon {
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 0.65rem;
+}
+
+.manager-pulse-cyan .manager-pulse-icon {
+  color: #0891b2;
+  background: rgb(6 182 212 / 12%);
+}
+.manager-pulse-green .manager-pulse-icon {
+  color: #059669;
+  background: rgb(16 185 129 / 12%);
+}
+.manager-pulse-violet .manager-pulse-icon {
+  color: #7c3aed;
+  background: rgb(139 92 246 / 12%);
+}
+
+/* Academy module section skins: same tokens, distinct visual jobs. */
+.academy-section-card {
+  overflow: hidden;
+  border-color: color-mix(in srgb, var(--border) 76%, transparent);
+  box-shadow: 0 14px 34px rgb(15 23 42 / 5%);
+}
+
+.academy-section-header {
+  position: relative;
+  overflow: hidden;
+}
+
+.academy-section-header::after {
+  position: absolute;
+  right: -2rem;
+  bottom: -4rem;
+  width: 11rem;
+  height: 11rem;
+  border-radius: 999px;
+  content: '';
+  opacity: 0.8;
+  pointer-events: none;
+}
+
+.academy-leads-header {
+  background: linear-gradient(
+    110deg,
+    rgb(245 158 11 / 15%),
+    var(--card) 55%,
+    rgb(251 146 60 / 10%)
+  );
+  border-inline-start: 4px solid #f59e0b;
+}
+
+.academy-leads-header::after {
+  background: radial-gradient(circle, rgb(245 158 11 / 18%), transparent 68%);
+}
+.academy-groups-header {
+  background: linear-gradient(
+    110deg,
+    rgb(37 99 235 / 14%),
+    var(--card) 58%,
+    rgb(14 165 233 / 10%)
+  );
+  border-inline-start: 4px solid #2563eb;
+}
+
+.academy-groups-header::after {
+  background: radial-gradient(circle, rgb(14 165 233 / 18%), transparent 68%);
+}
+.academy-attendance-header {
+  background: linear-gradient(
+    110deg,
+    rgb(16 185 129 / 15%),
+    var(--card) 55%,
+    rgb(245 158 11 / 9%)
+  );
+  border-inline-start: 4px solid #10b981;
+}
+
+.academy-attendance-header::after {
+  background: radial-gradient(circle, rgb(16 185 129 / 18%), transparent 68%);
+}
+
+.academy-eyebrow {
+  position: relative;
+  z-index: 1;
+  color: var(--muted-foreground);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.academy-header-icon {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  width: 2.75rem;
+  height: 2.75rem;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid currentColor;
+  border-radius: 0.9rem;
+  box-shadow: 0 8px 18px rgb(15 23 42 / 8%);
+}
+
+.academy-amber-icon {
+  color: #d97706;
+  background: rgb(245 158 11 / 13%);
+}
+.academy-green-icon {
+  color: #059669;
+  background: rgb(16 185 129 / 13%);
+}
+
+.academy-groups-card .rounded-2xl.border.bg-muted\/20 {
+  border-color: rgb(37 99 235 / 18%);
+  background: linear-gradient(145deg, rgb(37 99 235 / 7%), transparent 55%);
+}
+
+.academy-attendance-picker {
+  background: linear-gradient(180deg, var(--card), rgb(16 185 129 / 2%));
+}
+
+.academy-attendance-card .academy-header-icon {
+  border-radius: 999px;
+}
+
+@media (min-width: 768px) {
+  .manager-operations-strip {
+    grid-template-columns: minmax(12rem, 0.8fr) minmax(0, 2.2fr);
+    align-items: center;
+    padding: 1.1rem 1.25rem;
+  }
+
+  .manager-pulse-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* Role-specific control surfaces and lightweight motion. */
+.admin-control-surface {
+  isolation: isolate;
+}
+.admin-grid-pattern {
+  background-image:
+    linear-gradient(rgb(99 102 241 / 7%) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(99 102 241 / 7%) 1px, transparent 1px);
+  background-size: 28px 28px;
+  mask-image: linear-gradient(to right, black, transparent 78%);
+}
+.admin-eyebrow {
+  color: #4f46e5;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+.admin-stat-card {
+  transition:
+    transform 0.22s ease,
+    box-shadow 0.22s ease;
+}
+.admin-stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 18px 38px rgb(79 70 229 / 10%);
+}
+.admin-stat-icon {
+  transition: transform 0.22s ease;
+}
+.admin-stat-card:hover .admin-stat-icon {
+  transform: rotate(-7deg) scale(1.08);
+}
+.admin-action-tile {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: 0.9rem;
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease,
+    border-color 0.2s ease;
+}
+.admin-action-tile:hover {
+  transform: translateX(4px);
+  border-color: rgb(99 102 241 / 35%);
+  background: rgb(99 102 241 / 6%);
+}
+.admin-action-tile span {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+.admin-action-tile small {
+  color: var(--muted-foreground);
+  font-size: 0.7rem;
+}
+.manager-hero {
+  animation: manager-hero-in 0.55s ease both;
+}
+.manager-kpi-card {
+  animation: manager-card-in 0.5s ease both;
+}
+.manager-kpi-card:nth-child(2) {
+  animation-delay: 70ms;
+}
+.manager-kpi-card:nth-child(3) {
+  animation-delay: 140ms;
+}
+.manager-kpi-card:nth-child(4) {
+  animation-delay: 210ms;
+}
+.manager-kpi-icon {
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+}
+.manager-kpi-card:hover .manager-kpi-icon {
+  transform: translateY(-3px) rotate(-6deg);
+  box-shadow: 0 8px 18px rgb(6 182 212 / 16%);
+}
+.manager-focus-row {
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+.manager-focus-row:hover {
+  transform: translateX(4px);
+  box-shadow: 0 8px 20px rgb(15 23 42 / 7%);
+}
+.manager-schedule-icon {
+  transition: transform 0.25s ease;
+}
+.manager-schedule-icon:hover {
+  transform: rotate(8deg) scale(1.08);
+}
+.manager-chart-card {
+  animation: manager-card-in 0.65s ease both;
+}
+@keyframes manager-hero-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes manager-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .manager-hero,
+  .manager-kpi-card,
+  .manager-chart-card {
+    animation: none;
+  }
+  .admin-stat-card,
+  .admin-action-tile,
+  .manager-focus-row {
+    transition: none;
+  }
+}
+
+/* Shared micro-interactions: navigation and controls stay responsive across every role. */
+[data-sidebar='menu-button'],
+[data-sidebar='menu-sub-button'] {
+  transition:
+    transform 0.2s ease,
+    background-color 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+[data-sidebar='menu-button']:hover,
+[data-sidebar='menu-sub-button']:hover {
+  transform: translateX(3px);
+}
+[data-sidebar='menu-button'] svg,
+[data-sidebar='menu-sub-button'] svg {
+  transition:
+    transform 0.2s ease,
+    color 0.2s ease;
+}
+[data-sidebar='menu-button']:hover svg,
+[data-sidebar='menu-sub-button']:hover svg {
+  transform: scale(1.08) rotate(-4deg);
+}
+[data-slot='button'] {
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background-color 0.2s ease,
+    border-color 0.2s ease;
+}
+[data-slot='button']:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+.panel-icon-button:hover svg {
+  animation: panel-icon-ring 0.55s ease;
+}
+.admin-control-surface {
+  animation: admin-surface-in 0.55s ease both;
+}
+.admin-grid-pattern {
+  animation: admin-grid-drift 14s linear infinite;
+}
+.admin-health-dot {
+  box-shadow: 0 0 0 0 rgb(52 211 153 / 50%);
+  animation: admin-health-pulse 2s ease-out infinite;
+}
+.manager-pipeline-bar {
+  animation: manager-bar-in 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+  transform-origin: left center;
+}
+.manager-schedule-row {
+  transition:
+    transform 0.2s ease,
+    background-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+.manager-schedule-row:hover {
+  transform: translateX(4px);
+  background-color: rgb(6 182 212 / 6%);
+  box-shadow: 0 8px 18px rgb(15 23 42 / 6%);
+}
+@keyframes panel-icon-ring {
+  0%,
+  100% {
+    transform: rotate(0);
+  }
+  35% {
+    transform: rotate(-12deg);
+  }
+  70% {
+    transform: rotate(8deg);
+  }
+}
+@keyframes admin-surface-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes admin-grid-drift {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 28px 28px;
+  }
+}
+@keyframes admin-health-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgb(52 211 153 / 50%);
+  }
+  70% {
+    box-shadow: 0 0 0 7px rgb(52 211 153 / 0%);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgb(52 211 153 / 0%);
+  }
+}
+@keyframes manager-bar-in {
+  from {
+    opacity: 0.25;
+    transform: scaleX(0);
+  }
+  to {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-sidebar='menu-button'],
+  [data-sidebar='menu-sub-button'],
+  [data-slot='button'],
+  .admin-control-surface,
+  .admin-grid-pattern,
+  .admin-health-dot,
+  .manager-pipeline-bar,
+  .manager-schedule-row {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* Role-neutral motion for Teacher, Finance, Student and Academy modules. */
+main[data-layout] {
+  animation: crm-page-in 0.42s ease both;
+}
+main[data-layout] [data-slot='card'] {
+  animation: crm-card-in 0.45s ease both;
+  transition:
+    transform 0.22s ease,
+    box-shadow 0.22s ease,
+    border-color 0.22s ease;
+}
+main[data-layout] [data-slot='card']:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgb(15 23 42 / 6%);
+}
+main[data-layout] [data-slot='table-row'] {
+  transition:
+    transform 0.18s ease,
+    background-color 0.18s ease,
+    box-shadow 0.18s ease;
+}
+main[data-layout] [data-slot='table-row']:hover {
+  transform: translateX(2px);
+  box-shadow: inset 3px 0 0 var(--primary);
+}
+main[data-layout]
+  a:not([data-sidebar='menu-button']):not([data-sidebar='menu-sub-button'])
+  svg {
+  transition:
+    transform 0.2s ease,
+    color 0.2s ease;
+}
+main[data-layout]
+  a:hover:not([data-sidebar='menu-button']):not(
+    [data-sidebar='menu-sub-button']
+  )
+  svg {
+  transform: translateX(2px) scale(1.06);
+}
+main[data-layout] [data-slot='badge'] {
+  transition:
+    transform 0.18s ease,
+    filter 0.18s ease;
+}
+main[data-layout] [data-slot='badge']:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.04);
+}
+main[data-layout] input:focus-visible,
+main[data-layout] textarea:focus-visible,
+main[data-layout] [role='combobox']:focus-visible {
+  animation: crm-focus-ring 0.35s ease both;
+}
+main[data-layout] .recharts-wrapper {
+  animation: crm-chart-in 0.6s ease both;
+}
+@keyframes crm-page-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes crm-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(7px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes crm-chart-in {
+  from {
+    opacity: 0.35;
+    transform: scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@keyframes crm-focus-ring {
+  from {
+    box-shadow: 0 0 0 0 rgb(6 182 212 / 0%);
+  }
+  to {
+    box-shadow: 0 0 0 3px rgb(6 182 212 / 16%);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  main[data-layout],
+  main[data-layout] [data-slot='card'],
+  main[data-layout] [data-slot='table-row'],
+  main[data-layout] .recharts-wrapper {
+    animation: none !important;
+    transition: none !important;
+  }
+  main[data-layout] a svg,
+  main[data-layout] [data-slot='badge'] {
+    transition: none !important;
+  }
+}
+
+/* Dense admin surfaces: richer hierarchy without adding expensive assets. */
+.admin-stat-card,
+.admin-control-surface,
+.admin-action-tile {
+  content-visibility: auto;
+  contain-intrinsic-size: 160px;
+}
+.dark .admin-stat-card {
+  background: linear-gradient(145deg, rgb(20 28 48 / 96%), rgb(15 22 39 / 96%));
+  box-shadow: 0 14px 34px rgb(0 0 0 / 18%);
+}
+.dark .admin-action-tile {
+  background: rgb(255 255 255 / 3%);
+  border-color: rgb(148 163 184 / 16%);
+}
+.dark .admin-action-tile:hover {
+  background: rgb(99 102 241 / 12%);
+  border-color: rgb(129 140 248 / 36%);
+}
