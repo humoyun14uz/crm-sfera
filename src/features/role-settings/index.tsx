@@ -1,0 +1,16 @@
+import { useState } from 'react'
+import { Link } from '@tanstack/react-router'
+import { Bell, Globe2, LockKeyhole, Palette, Save, ShieldCheck } from 'lucide-react'
+import { toast } from 'sonner'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Switch } from '@/components/ui/switch'
+import { Label } from '@/components/ui/label'
+
+export type RoleSettingsLabels = { title: string; description: string; language: string; notifications: string; notificationsHint: string; security: string; securityHint: string; appearance: string; appearanceHint: string; save: string; saved: string; enabled?: string; disabled?: string }
+
+export function RoleSettings({ labels }: { labels: RoleSettingsLabels }) {
+  const [notifications, setNotifications] = useState(true); const [compact, setCompact] = useState(false)
+  const save = () => { toast.success(labels.saved); /* BACKEND: PATCH /api/profile/preferences */ }
+  return <div className='space-y-6'><div><h1 className='text-2xl font-bold tracking-tight md:text-3xl'>{labels.title}</h1><p className='mt-1 text-muted-foreground'>{labels.description}</p></div><div className='grid gap-6 lg:grid-cols-2'><Card><CardHeader><CardTitle className='flex items-center gap-2'><Bell className='size-5 text-primary' />{labels.notifications}</CardTitle><CardDescription>{labels.notificationsHint}</CardDescription></CardHeader><CardContent className='flex items-center justify-between'><div><Label>{notifications ? (labels.enabled ?? '') : (labels.disabled ?? '')}</Label><p className='text-sm text-muted-foreground'>{labels.notificationsHint}</p></div><Switch checked={notifications} onCheckedChange={setNotifications} /></CardContent></Card><Card><CardHeader><CardTitle className='flex items-center gap-2'><Palette className='size-5 text-primary' />{labels.appearance}</CardTitle><CardDescription>{labels.appearanceHint}</CardDescription></CardHeader><CardContent className='flex items-center justify-between'><div><Label>{compact ? (labels.enabled ?? '') : (labels.disabled ?? '')}</Label><p className='text-sm text-muted-foreground'>{labels.appearanceHint}</p></div><Switch checked={compact} onCheckedChange={setCompact} /></CardContent></Card><Card><CardHeader><CardTitle className='flex items-center gap-2'><Globe2 className='size-5 text-primary' />{labels.language}</CardTitle><CardDescription>{labels.description}</CardDescription></CardHeader><CardContent><p className='text-sm text-muted-foreground'>{labels.language}</p></CardContent></Card><Card><CardHeader><CardTitle className='flex items-center gap-2'><ShieldCheck className='size-5 text-primary' />{labels.security}</CardTitle><CardDescription>{labels.securityHint}</CardDescription></CardHeader><CardContent><Button variant='outline' asChild><Link to='/settings/security'><LockKeyhole className='me-2 size-4' />{labels.security}</Link></Button></CardContent></Card></div><Button onClick={save}><Save className='me-2 size-4' />{labels.save}</Button></div>
+}
