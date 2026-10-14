@@ -1,8 +1,13 @@
+import { lazy, Suspense } from 'react'
 import z from 'zod'
 import { createFileRoute } from '@tanstack/react-router'
+import { RouteLoading } from '@/components/route-loading'
 import { requirePermission } from '@/lib/route-guard'
-import { Users } from '@/features/users'
 import { roles } from '@/features/users/data/data'
+
+const Users = lazy(() =>
+  import('@/features/users').then((m) => ({ default: m.Users }))
+)
 
 const usersSearchSchema = z.object({
   page: z.number().optional().catch(1),
@@ -30,5 +35,10 @@ const usersSearchSchema = z.object({
 export const Route = createFileRoute('/_authenticated/users/')({
   beforeLoad: () => requirePermission('students.read'),
   validateSearch: usersSearchSchema,
-  component: Users,
+  component: () => (
+    <Suspense fallback={<RouteLoading />}>
+      <Users />
+    </Suspense>
+  ),
 })
+

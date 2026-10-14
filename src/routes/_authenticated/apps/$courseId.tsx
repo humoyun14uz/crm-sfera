@@ -1,8 +1,18 @@
+import { lazy, Suspense } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
+import { RouteLoading } from '@/components/route-loading'
 import { requirePermission } from '@/lib/route-guard'
-import { CourseDetails } from '@/features/courses/details'
+
+const CourseDetails = lazy(() =>
+  import('@/features/courses/details').then((m) => ({ default: m.CourseDetails }))
+)
 
 export const Route = createFileRoute('/_authenticated/apps/$courseId')({
   beforeLoad: () => requirePermission('courses.read'),
-  component: CourseDetails,
+  component: () => (
+    <Suspense fallback={<RouteLoading />}>
+      <CourseDetails />
+    </Suspense>
+  ),
 })
+

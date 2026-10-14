@@ -1,9 +1,16 @@
+import { lazy, Suspense } from 'react'
 import { createFileRoute, redirect } from '@tanstack/react-router'
-import { Dashboard } from '@/features/dashboard'
-import { StudentDashboard } from '@/features/student/student-dashboard'
+import { RouteLoading } from '@/components/route-loading'
 import { getPrimaryRole } from '@/lib/rbac'
 import { requireAuthenticated } from '@/lib/route-guard'
 import { useAuthStore } from '@/stores/auth-store'
+
+const Dashboard = lazy(() =>
+  import('@/features/dashboard').then((m) => ({ default: m.Dashboard }))
+)
+const StudentDashboard = lazy(() =>
+  import('@/features/student/student-dashboard').then((m) => ({ default: m.StudentDashboard }))
+)
 
 export const Route = createFileRoute('/_authenticated/')({
   beforeLoad: () => {
@@ -18,5 +25,10 @@ export const Route = createFileRoute('/_authenticated/')({
 
 function RoleDashboard() {
   const role = getPrimaryRole(useAuthStore((state) => state.auth.user?.role))
-  return role === 'Student' ? <StudentDashboard /> : <Dashboard />
+  return (
+    <Suspense fallback={<RouteLoading />}>
+      {role === 'Student' ? <StudentDashboard /> : <Dashboard />}
+    </Suspense>
+  )
 }
+

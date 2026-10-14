@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import { Outlet } from '@tanstack/react-router'
 import { getCookie } from '@/lib/cookies'
 import { cn } from '@/lib/utils'
@@ -6,6 +7,7 @@ import { SearchProvider } from '@/context/search-provider'
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
 import { AppSidebar } from '@/components/layout/app-sidebar'
 import { SkipToMain } from '@/components/skip-to-main'
+import { RouteLoading } from '@/components/route-loading'
 
 type AuthenticatedLayoutProps = {
   children?: React.ReactNode
@@ -33,7 +35,11 @@ export function AuthenticatedLayout({ children }: AuthenticatedLayoutProps) {
               'peer-data-[variant=inset]:has-data-[layout=fixed]:h-[calc(100svh-(var(--spacing)*4))]'
             )}
           >
-            {children ?? <Outlet />}
+            {children ?? (
+              <Suspense fallback={<RouteLoading />}>
+                <Outlet />
+              </Suspense>
+            )}
           </SidebarInset>
         </SidebarProvider>
       </LayoutProvider>

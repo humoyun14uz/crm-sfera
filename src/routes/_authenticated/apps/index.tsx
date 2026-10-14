@@ -1,7 +1,12 @@
+import { lazy, Suspense } from 'react'
 import z from 'zod'
 import { createFileRoute } from '@tanstack/react-router'
+import { RouteLoading } from '@/components/route-loading'
 import { requirePermission } from '@/lib/route-guard'
-import { Courses } from '@/features/courses'
+
+const Courses = lazy(() =>
+  import('@/features/courses').then((m) => ({ default: m.Courses }))
+)
 
 const appsSearchSchema = z.object({
   type: z
@@ -15,5 +20,10 @@ const appsSearchSchema = z.object({
 export const Route = createFileRoute('/_authenticated/apps/')({
   beforeLoad: () => requirePermission('courses.read'),
   validateSearch: appsSearchSchema,
-  component: Courses,
+  component: () => (
+    <Suspense fallback={<RouteLoading />}>
+      <Courses />
+    </Suspense>
+  ),
 })
+

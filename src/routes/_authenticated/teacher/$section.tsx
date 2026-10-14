@@ -1,6 +1,11 @@
+import { lazy, Suspense } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
-import { TeacherDashboard } from '@/features/teacher'
+import { RouteLoading } from '@/components/route-loading'
 import { requirePermission } from '@/lib/route-guard'
+
+const TeacherDashboard = lazy(() =>
+  import('@/features/teacher').then((m) => ({ default: m.TeacherDashboard }))
+)
 
 export const Route = createFileRoute('/_authenticated/teacher/$section')({
   beforeLoad: () => requirePermission('teacher.workspace'),
@@ -9,5 +14,10 @@ export const Route = createFileRoute('/_authenticated/teacher/$section')({
 
 function TeacherSection() {
   const { section } = Route.useParams()
-  return <TeacherDashboard section={section} />
+  return (
+    <Suspense fallback={<RouteLoading />}>
+      <TeacherDashboard section={section} />
+    </Suspense>
+  )
 }
+
