@@ -8,6 +8,8 @@ import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
 import { AppSidebar } from '@/components/layout/app-sidebar'
 import { SkipToMain } from '@/components/skip-to-main'
 import { RouteLoading } from '@/components/route-loading'
+import { OfflineBanner } from '@/components/offline-banner'
+import { ErrorBoundary } from '@/components/error-boundary'
 
 type AuthenticatedLayoutProps = {
   children?: React.ReactNode
@@ -35,10 +37,13 @@ export function AuthenticatedLayout({ children }: AuthenticatedLayoutProps) {
               'peer-data-[variant=inset]:has-data-[layout=fixed]:h-[calc(100svh-(var(--spacing)*4))]'
             )}
           >
+            <OfflineBanner />
             {children ?? (
-              <Suspense fallback={<RouteLoading />}>
-                <Outlet />
-              </Suspense>
+              <ErrorBoundary>
+                <Suspense fallback={<RouteLoading />}>
+                  <Outlet />
+                </Suspense>
+              </ErrorBoundary>
             )}
           </SidebarInset>
         </SidebarProvider>

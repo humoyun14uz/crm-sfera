@@ -37,6 +37,9 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  build: {
+    chunkSizeWarningLimit: 800,
+  },
   test: {
     silent: 'passed-only',
     unstubEnvs: true,
